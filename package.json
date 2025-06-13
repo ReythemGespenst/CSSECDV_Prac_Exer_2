@@ -15,5 +15,8 @@
     "url": "https://github.com/ReythemGespenst/CSSECDV_Prac_Exer_2/issues"
   },
   "homepage": "https://github.com/ReythemGespenst/CSSECDV_Prac_Exer_2#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "mongodb": "^6.17.0"
+  }
 }
