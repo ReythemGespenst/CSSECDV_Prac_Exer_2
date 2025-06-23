@@ -15,7 +15,11 @@ app.use(session({
     secret: "Change this please",
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({mongoUrl: 'mongodb+srv://roncajumban:MDvILUw2z8ocOJlS@cluster0.lf44nxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'})
+    store: MongoStore.create({mongoUrl: 'mongodb+srv://roncajumban:MDvILUw2z8ocOJlS@cluster0.lf44nxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'}),
+    cookie: {
+        maxAge: 1000*60,
+        httpOnly: true
+    }
 }))
 
 app.listen(3000, function(req,res) {
