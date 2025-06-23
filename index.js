@@ -1,17 +1,23 @@
 const express = require('express')
+const session = require('express-session')
 const app = express()
+const MongoStore = require('connect-mongo')
+
+const getRouters = require('./routes/getRouter')
+const postRouters = require('./routes/postRouter')
 
 app.set("view engine", "ejs")
 
-app.get('/', (req,res,next) => {
-    console.log('test')
-    res.render("login")
-})
+app.use("/", getRouters)
+app.use("/post", postRouters)
 
-app.get('/register', (req, res) => {
-    console.log('switch to register')
-    res.render("register")
-})
+app.use(session({
+    secret: "Change this please",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({mongoUrl: 'mongodb+srv://roncajumban:MDvILUw2z8ocOJlS@cluster0.lf44nxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'})
+}))
 
-app.listen(3000)
-console.log("Listening at port 3000")
+app.listen(3000, function(req,res) {
+    console.log("Listening at port 3000")
+})
