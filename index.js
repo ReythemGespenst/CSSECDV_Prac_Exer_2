@@ -8,5 +8,10 @@ app.get('/', (req,res,next) => {
     res.render("login")
 })
 
+app.get('/register', (req, res) => {
+    console.log('switch to register')
+    res.render("register")
+})
+
 app.listen(3000)
 console.log("Listening at port 3000")
