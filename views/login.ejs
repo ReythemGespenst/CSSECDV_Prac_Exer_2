@@ -1,9 +1,9 @@
 <html>
 <head></head>
 <body>
-	<form class="formbox">
-		<input type="text" class="username" placeholder="username"> </br>
-		<input type="password" class="password" placeholder="password"> </br>
+	<form class="formbox" action = "/post/login" method = "POST">
+		<input type="text" name = "username" class="username" placeholder="username"> </br>
+		<input type="password" name = "password" class="password" placeholder="password"> </br>
 		<input type="submit" class="submit" value="Log In"></br>
 		<a href="/register" class = "loginswap"> Register Here </a>
 	</form>
