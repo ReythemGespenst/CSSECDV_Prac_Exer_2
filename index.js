@@ -2,12 +2,21 @@ require('dotenv').config()
 
 const express = require('express')
 const session = require('express-session')
+const mongoose = require('mongoose');
 
-const app = express()
+
+const app = express() 
 const MongoStore = require('connect-mongo')
 
+// connect to db atlas
+const dbURI = 'mongodb+srv://group2:MrsA0tzKYszunkr3@pe2.g9bjw1d.mongodb.net/?retryWrites=true&w=majority&appName=PE2';
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then((result) => console.log('connected to db'))
+    .catch((err) => console.log(err));
+
 const getRouters = require('./routes/getRouter')
-const postRouters = require('./routes/postRouter')
+const postRouters = require('./routes/postRouter');
+const { default: mongoose } = require('mongoose');
 
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended: true}))
