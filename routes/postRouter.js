@@ -7,7 +7,7 @@ router.post('/register', (req,res) => {
 
     console.log("Headers:", req.headers['content-type']);
     console.log("Raw Body:", req.body);
-    const {username, password, confirmPass} = req.body;
+    const {username, email, password, confirmPass} = req.body;
 
     // assuming user must be unique.
     // if user exist, redirect to login page
