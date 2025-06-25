@@ -1,11 +1,16 @@
 <html>
-<head></head>
+<head>
+	<link rel="stylesheet" type="text/css" href="/styles.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
 <body>
+	<script src="/login.js"></script>
 	<form class="formbox" action = "/post/login" method = "POST">
 		<input type="text" name = "username" class="username" placeholder="username"> </br>
 		<input type="password" name = "password" class="password" placeholder="password"> </br>
 		<input type="submit" class="submit" value="Log In"></br>
-		<a href="/register" class = "loginswap"> Register Here </a>
+		<a href="/register" class = "loginswap"> Register Here </a></br>
+		<div id="errors"></div>
 	</form>
 </body>
 </html>

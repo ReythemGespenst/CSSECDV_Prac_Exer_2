@@ -8,7 +8,8 @@ const MongoStore = require('connect-mongo')
 
 const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter')
-
+app.use(express.static('css'))
+app.use(express.static('js'))
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended: true}))
 
