@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const session = require('express-session')
 
@@ -12,6 +14,7 @@ app.use(express.urlencoded({extended: true}))
 
 app.use("/", getRouters)
 app.use("/post", postRouters)
+
 /*
 app.use(session({
     secret: "Change this please",
