@@ -1,15 +1,19 @@
 require('dotenv').config()
+require('./db')
 
 const express = require('express')
 const session = require('express-session')
+const mongoose = require('mongoose');
+const collection = require("./models/user");
 
-const app = express()
+const app = express() 
 const MongoStore = require('connect-mongo')
 
 const getRouters = require('./routes/getRouter')
-const postRouters = require('./routes/postRouter')
-app.use(express.static('css'))
-app.use(express.static('js'))
+const postRouters = require('./routes/postRouter');
+// const { default: mongoose } = require('mongoose');
+
+
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended: true}))
 

@@ -4,6 +4,9 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+	<% if (typeof error !== 'undefined' && error) { %>
+  <p style="color:red;"><%= error %></p>
+<% } %>
 	<script src="/login.js"></script>
 	<form class="formbox" action = "/post/login" method = "POST">
 		<input type="text" name = "username" class="username" placeholder="username"> </br>

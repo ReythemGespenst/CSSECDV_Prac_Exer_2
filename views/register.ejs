@@ -1,14 +1,17 @@
 <html>
-<head><link rel="stylesheet" type="text/css" href="/styles.css">
-</head>
-<body>
-	<form class="formbox">
-		<input type="text" name="username" class="username" placeholder="username"> </br>
-		<input type="email" name="email" class="email" placeholder="email"> </br>
-		<input type="password" name="password" class="password" placeholder="password"> </br>
-		<input type="password" name="confirm" class="password" placeholder="confirm password"> </br>
-		<input type="submit" class="submit" value="Log In"></br>
-		<a href="/" class = "loginswap"> Already have an account </a>
-	</form>
-</body>
+	<head><link rel="stylesheet" type="text/css" href="/styles.css"></head>
+	<body>
+
+		<% if (error) { %>
+			<p style = "color:red;"><%= error%></p>
+		<% } %>
+		<form class="formbox" action="/post/register" method="POST">
+			<input type="text" name="username" class="username" id="username" placeholder="username"> </br>
+			<input type="email" name = "email" class="email" id="email" placeholder="email"> </br>
+			<input type="password" name="password" class="password" id="password" placeholder="password"> </br>
+			<input type="password" name="confirmPass" class="password" id="confirmPass" placeholder="confirm password"> </br>
+			<input type="submit" class="submit" value="Register"></br>
+			<a href="/" class = "loginswap"> Already have an account? Login here </a>
+		</form>
+	</body>
 </html>
