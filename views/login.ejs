@@ -1,6 +1,10 @@
 <html>
 <head></head>
 <body>
+	<% if (typeof error !== 'undefined' && error) { %>
+  <p style="color:red;"><%= error %></p>
+<% } %>
+
 	<form class="formbox" action = "/post/login" method = "POST">
 		<input type="text" name = "username" class="username" placeholder="username"> </br>
 		<input type="password" name = "password" class="password" placeholder="password"> </br>
