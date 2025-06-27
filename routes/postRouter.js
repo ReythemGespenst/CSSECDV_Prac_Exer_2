@@ -115,12 +115,39 @@ router.post('/register', async (req, res) => {
         return res.render('register', { error: "Error: Password cannot be the same as the email" });
     }
 
+    function hasSequentialCharacters(password) {
+        const length = password.length;
+        for (let i = 0; i < length - 4; i++) {
+            const slice = password.slice(i, i + 5);
+            if (isSequential(slice)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function isSequential(str) {
+        const charCodes = str.split('').map(char => char.charCodeAt(0));
+        const isIncreasing = charCodes.every((val, i, arr) => i === 0 || val === arr[i - 1] + 1);
+        const isDecreasing = charCodes.every((val, i, arr) => i === 0 || val === arr[i - 1] - 1);
+        return isIncreasing || isDecreasing;
+    }
+
     //password sequential
-    if (/(\d{3,}|[a-z]{3,})/.test(passwordCheck)) {
+    if (hasSequentialCharacters(passwordCheck)) {
+        console.log("Blocked due to sequential characters:", passwordCheck);
+        console.log("Regex test result:", /(\d{5,}|[a-z]{5,})/.test(passwordCheck));
+        console.log("Regex test result:", /(\d{5}|[a-z]{5})/.test(passwordCheck));
+        console.log("Regex test result:", /(\{5,}|[a-z]{5,})/.test(passwordCheck));
+        console.log("Regex test result:", hasSequentialCharacters(passwordCheck));
         return res.render('register', { error: "Error: Password cannot contain sequential characters" });
     }
 
-    if (password !== confirmPass) {
+    if (/([a-zA-Z])\1{4,}/i.test(passwordCheck)){
+        return res.render('register', { error: "Error: Password cannot contain sequential characters" });
+    }
+
+    if (passwordCheck !== confirmPassCheck) {
         return res.render('register', { error: "Passwords do not match" });
     }
 
