@@ -198,7 +198,6 @@ router.post('/login', async (req, res) => {
     try {
         // const user = collection.collection({username: req.body.username, password: req.body.password});
         const { username, password } = req.body;
-
         const input = username.trim().toLowerCase()
         const user = await collection.findOne({
             $or: [
@@ -226,6 +225,37 @@ router.post('/login', async (req, res) => {
 router.post('/signout', (req, res) => {
     res.setHeader('Set-Cookie', `username=; HttpOnly; Path=/; Max-Age=0`);
     return res.redirect('/login');
+    console.log('Username: ', username)
+    console.log('Password: ', password)
+	if (username === "test" && password === "1234") {
+        res.json({ success: true })
+    } else {
+        res.json({ success: false, message: "Invalid username or password" })
+    }
+
+    //res.redirect('/dashboard')
+	
+})
+
+/*
+router.post('/login', async (req, res) => {
+    const { username, password } = req.body
+
+    try {
+        const user = await User.findOne({ username })
+
+        if (user && user.password === password) {
+            // Optionally start session here
+            res.json({ success: true })
+        } else {
+            res.json({ success: false, message: "Invalid username or password" })
+        }
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ success: false, message: "Server error" })
+    }
+})*/
+router.post('/signout', (req,res) => {
 })
 
 

@@ -13,6 +13,7 @@ const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter');
 // const { default: mongoose } = require('mongoose');
 
+
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended: true}))
 
