@@ -5,10 +5,12 @@ const express = require('express')
 const session = require('express-session')
 const mongoose = require('mongoose');
 const collection = require("./models/user");
-
 const app = express() 
 const MongoStore = require('connect-mongo')
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 app.use(express.static('css'))
+app.use(express.static('js'))
 const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter');
 // const { default: mongoose } = require('mongoose');

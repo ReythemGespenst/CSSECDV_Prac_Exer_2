@@ -59,7 +59,7 @@ router.post('/register', async (req, res) => {
 
     //email checking
     //trim all leading and trailing whitespaces
-    if (!emailNormalized) {
+    if (!emailNormalized || emailNormalized.length < 1) {
         return res.render('register', { error: "Error: Email address is required" });
     }
     //only 1 @
@@ -176,6 +176,7 @@ router.post('/register', async (req, res) => {
                         hash_algorithm: 'bcrypt'
                     });
                     console.log("you are now registered");
+					res.setHeader('Set-Cookie', `username=${newUser.display_name}; HttpOnly; Path=/; Max-Age=3600`);
                     return res.redirect('/');
                 } catch (error) {
                     console.error(error);
@@ -222,7 +223,7 @@ router.post('/login', async (req, res) => {
         // if credentials match
         if (await bcrypt.compare(passwordCheck, user.password_hash)) {
             console.log('logged in successfully');
-            res.setHeader('Set-Cookie', `username=${user.username}; HttpOnly; Path=/; Max-Age=3600`);
+            res.setHeader('Set-Cookie', `username=${user.display_name}; HttpOnly; Path=/; Max-Age=3600`);
             res.redirect("/dashboard"); // this part will redirect the user to the main page
         } else {
             console.log('did not login successfully');

@@ -5,6 +5,7 @@
 		<% if (error) { %>
 			<p style = "color:red;"><%= error%></p>
 		<% } %>
+		<script src="/login.js"></script>
 		<form class="formbox" action="/post/register" method="POST">
 			<input type="text" name="username" class="username" id="username" placeholder="username"> </br>
 			<input type="email" name = "email" class="email" id="email" placeholder="email"> </br>

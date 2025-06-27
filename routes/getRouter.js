@@ -20,12 +20,12 @@ router.get('/register', (req, res) => {
 
 
 router.get('/dashboard', (req,res) => {
-
+	const username = req.cookies.username;
     if (!isUserLoggedIn(req)){
         return res.redirect('/login')
     }
-    
-    res.render("dashboard")
+   
+    res.render("dashboard", {username })
 })
 
 module.exports = router
