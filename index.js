@@ -9,7 +9,6 @@ const collection = require("./models/user");
 const app = express() 
 const MongoStore = require('connect-mongo')
 app.use(express.static('css'))
-app.use(express.static('js'))
 const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter');
 // const { default: mongoose } = require('mongoose');
