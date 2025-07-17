@@ -1,0 +1,19 @@
+<html>
+<head><link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+<p>Welcome, user <p style="color:green;"><%= username %></p>Change your profile here</p>
+	<form action="/post/signout" method="POST">
+		<input type="text" value="<%= username %>" name="cName">
+		<label for="cName">Change Username</label>
+		<input type="submit" value="Change Name">
+	</form></br>
+	<form action="/post/signout" method="POST">
+		<input type="password" placeholder="Old Password" name="oPass">
+		<input type="password" placeholder="New Password" name="nPass">
+		<input type="password" placeholder="Confirm New Password" name="cPass">
+		<label for="oPass">Change Password</label>
+		<input type="submit" value="Change Password">
+	</form>
+</body>
+</html>
