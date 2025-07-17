@@ -1,0 +1,19 @@
+<html>
+<head><link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <p>Welcome, manager <span style="color:green;"><%= username %></span></p>
+
+    <p>Users</p>
+    <ul>
+        <% users.forEach(user => { %>
+            <li>
+                <%= user.username %>
+                <form action="/users/<%= user._id %>" method="get" style="display:inline;">
+                    <input type="submit" value="View More">
+                </form>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<html>
+<head>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <p>Welcome, manager <span style="color:green;"><%= username %></span></p>
+
+    <h2>User Details</h2>
+    <p><strong>Username:</strong> <%= user.username %></p>
+    <p><strong>Display Name:</strong> <%= user.display_name %></p>
+    <p><strong>Email:</strong> <%= user.email %></p>
+    <p><strong>Last Login:</strong> <%= user.last_login%></p>
+	<!-- For deleting user logic not tested yet -->
+	
+	<form action="/post/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
+		<input type="hidden" name="userId" value="<%= user._id %>">
+		<input type="submit" value="Delete">
+	</form>
+
+
+    <button href="/users">Back</button>
+</body>
+</html>
