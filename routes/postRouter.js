@@ -178,7 +178,7 @@ router.post('/register', async (req, res) => {
                         console.error("Default role 'user' not found. Aborting registration.");
                         return res.render('register', {error: "Registration error: Server-side error, default user role not configured. Please contact support"});
                     }
-                    
+
                     const newUser = await collection.create({
                         username: normalizedUsername,
                         display_name,
@@ -289,9 +289,7 @@ router.post('/login', async (req, res) => {
     }
 })*/
 router.post('/signout', (req,res) => {
-})
-
-
+});
 
 
 module.exports = router
