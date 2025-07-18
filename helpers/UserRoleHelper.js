@@ -1,4 +1,5 @@
 const userRole = require('../models/userrole');
+const role = require('../models/role');
 
 // helper to remove all the current roles of the user
 async function removeUserRoles(userId){
@@ -20,4 +21,16 @@ async function updateUserRoles(userId, roleIds){
 	for (const roleId of roleIds){
 		await assignUserRole(userId, roleId);
 	}
+}
+
+async function getUserRoles(userId){
+	const userRoles = await userRole.find({user: userId}).populate('role', 'name');
+	return userRoles.map(ur => ur.role);
+}
+
+module.exports = {
+	removeUserRoles,
+	assignUserRole,
+	updateUserRoles,
+	getUserRoles
 }
