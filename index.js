@@ -8,15 +8,14 @@ const collection = require("./models/user");
 const app = express() 
 const MongoStore = require('connect-mongo')
 const cookieParser = require('cookie-parser');
-app.use(cookieParser());
-app.use(express.static('css'))
-app.use(express.static('js'))
 const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter');
 const adminRouters = require('./routes/adminRouters');
 // const { default: mongoose } = require('mongoose');
 
-
+app.use(cookieParser());
+app.use(express.static('css'))
+app.use(express.static('js'))
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended: true}))
 
