@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const collection = require("../models/user");
+const Role = require("../models/roles");
+const userRole = require("../models/userrole");
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 
@@ -163,11 +165,20 @@ router.post('/register', async (req, res) => {
         }
 
         bcrypt.genSalt(10, (err, salt) => {
+
             if (err) throw err;
+
             bcrypt.hash(password, salt, async (err, hash) => {
                 if (err) throw err;
+
                 try {
-                    console.log(collection);
+                    const defaultRole = await Role.findOne({name: 'user'});
+                    //checks if the defaultRole exists otherwise the website will tell you that the default user role does not exist.
+                    if(!defaultRole) {
+                        console.error("Default role 'user' not found. Aborting registration.");
+                        return res.render('register', {error: "Registration error: Server-side error, default user role not configured. Please contact support"});
+                    }
+                    
                     const newUser = await collection.create({
                         username: normalizedUsername,
                         display_name,
@@ -175,9 +186,17 @@ router.post('/register', async (req, res) => {
                         password_hash: hash,
                         hash_algorithm: 'bcrypt'
                     });
+
+                    await userRole.create({
+                        user: newUser._id,
+                        role: defaultRole._id,
+                        assigned_at: new Date()
+                    });
+
                     console.log("you are now registered");
 					res.setHeader('Set-Cookie', `username=${newUser.display_name}; HttpOnly; Path=/; Max-Age=3600`);
                     return res.redirect('/');
+
                 } catch (error) {
                     console.error(error);
                     console.log('could not create user. Please try again');
