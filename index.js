@@ -13,6 +13,7 @@ app.use(express.static('css'))
 app.use(express.static('js'))
 const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter');
+const adminRouters = require('./routes/adminRouters');
 // const { default: mongoose } = require('mongoose');
 
 
@@ -21,6 +22,7 @@ app.use(express.urlencoded({extended: true}))
 
 app.use("/", getRouters)
 app.use("/post", postRouters)
+app.use("/admin", adminRouters)
 
 /*
 app.use(session({
