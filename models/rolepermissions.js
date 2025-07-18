@@ -15,8 +15,10 @@ const rolePermissionSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	}
+} , {
+	collection: 'Role_Permissions'
 });
 
 rolePermissionSchema.index({role: 1, permission: 1}, {unique: true});
 
-module.exports = mongoose.model('RolePermission', rolePermissionSchema);
+module.exports = mongoose.model('Role_Permissions', rolePermissionSchema);

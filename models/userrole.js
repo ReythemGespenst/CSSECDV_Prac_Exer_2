@@ -15,8 +15,10 @@ const userRoleSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	}
+}, {
+	collection: 'User_Roles'
 });
 
 userRoleSchema.index({ user: 1, role: 1}, {unique: true});
 
-module.exports = mongoose.model('UserRole', userRoleSchema);
+module.exports = mongoose.model('User_Roles', userRoleSchema);
