@@ -2,10 +2,19 @@
 <head><link rel="stylesheet" type="text/css" href="/styles.css">
 </head>
 <body>
-    <p>Welcome, manager <span style="color:green;"><%= username %></span></p>
+<p>Welcome, manager <span style="color:green;"><%= username %></span></p>
 
-    <div id="users">
-        
-    </div>
+<div id="users">
+    <h2>All Users</h2>
+    <ul>
+        <% users.forEach(user => { %>
+            <li><%= user.display_name %> (<%= user.email %>)</li>
+        <% }) %>
+    </ul>
+</div>
+
+<div>
+    <a href="/dashboard" style="color:blue; text-decoration:underline;">Go Back</a>
+</div>
 </body>
 </html>
