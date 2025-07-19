@@ -37,11 +37,6 @@ router.get('/dashboard', async (req,res) => {
         })
 })
 
-
-   
-    res.render("dashboard", {username })
-});
-
 router.get('/profile', async (req,res) => {
     const username = req.cookies.username;
     const email = req.cookies.email;
