@@ -1,0 +1,25 @@
+<html>
+<head><link rel="stylesheet" type="text/css" href="/styles.css"></head>
+<body>
+<p>Welcome, <span style="color:green;"><%= username %></span></p>
+
+<div id="users">
+    <h2>Delete Users</h2>
+    <ul>
+        <% users.forEach(user => { %>
+            <li>
+                <%= user.display_name %> (<%= user.email %>)
+                <form action="/admin/delete-user" method="POST" style="display:inline;">
+                    <input type="hidden" name="userId" value="<%= user._id %>">
+                    <button type="submit" style="color:red;">Delete</button>
+                </form>
+            </li>
+        <% }) %>
+    </ul>
+</div>
+
+<div>
+    <a href="/dashboard" style="color:blue; text-decoration:underline;">Go Back</a>
+</div>
+</body>
+</html>

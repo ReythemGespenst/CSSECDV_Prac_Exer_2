@@ -48,4 +48,52 @@ router.get('/users',  requireRole(['admin', 'manager']), async (req, res) => {
 	}
 });
 
+router.get('/delete', async (req, res) => {
+	const username = req.cookies.username;
+
+	try {
+		// Fetch the logged-in admin user
+		const adminUser = await User.findOne({ display_name: username });
+
+		if (!adminUser) {
+			return res.render('dashboard', { username, error: 'Admin user not found' });
+		}
+
+		const roles = await getUserRoles(adminUser._id);
+
+		if (!roles.includes('admin')){
+			return res.render('dashboard', { username, roles, error: 'Access denied: Insufficient permissions' });
+		}
+
+		// Fetch all users excluding the admin
+		const users = await User.find({ _id: { $ne: adminUser._id } });
+
+		res.render('delete', { username, users });
+	} catch (err) {
+		console.error(err);
+		res.render('dashboard', { username, error: 'An error occurred. Please try again.' });
+	}
+});
+
+router.post('/delete-user', async (req, res) => {
+	const { userId } = req.body;
+
+	if (!mongoose.Types.ObjectId.isValid(userId)) {
+		return res.status(400).json({ error: 'Invalid userId' });
+	}
+
+	try {
+		// Delete the user from the User schema
+		await User.findByIdAndDelete(userId);
+
+		// Delete the user's roles from the user_roles schema
+		await UserRole.deleteMany({ user: userId });
+
+		res.redirect('/admin/delete');
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Failed to delete user' });
+	}
+});
+
 module.exports = router;
