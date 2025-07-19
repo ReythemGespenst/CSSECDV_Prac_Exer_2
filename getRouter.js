@@ -28,12 +28,8 @@ router.get('/dashboard', (req,res) => {
     res.render("dashboard", {username })
 })
 
-router.get('/users', async (req, res) => {
+router.get('/users', requireRole(['admin', 'manager']), async (req, res) => {
     const username = req.cookies.username;
-    if (!isUserLoggedIn(req)) {
-        return res.redirect('/login');
-    }
-
     try {
         const users = await User.find({}, '_id username'); 
         res.render('userlist', { username, users });

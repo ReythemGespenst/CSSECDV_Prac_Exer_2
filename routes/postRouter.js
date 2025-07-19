@@ -244,7 +244,7 @@ router.post('/login', async (req, res) => {
         if (await bcrypt.compare(passwordCheck, user.password_hash)) {
             console.log('logged in successfully');
             res.setHeader('Set-Cookie', `username=${user.display_name}; HttpOnly; Path=/; Max-Age=3600`);
-            res.redirect("/dashboard"); // this part will redirect the user to the main page
+            res.redirect("/dashboard"); 
         } else {
             console.log('did not login successfully');
             res.render("login", { title: "Login Account", error: "Invalid username or password" });
@@ -270,43 +270,6 @@ router.post('/signout', (req, res) => {
     //res.redirect('/dashboard')
 	
 })
-
-/*
-router.post('/login', async (req, res) => {
-    const { username, password } = req.body
-
-    try {
-        const user = await User.findOne({ username })
-
-        if (user && user.password === password) {
-            // Optionally start session here
-            res.json({ success: true })
-        } else {
-            res.json({ success: false, message: "Invalid username or password" })
-        }
-    } catch (err) {
-        console.error(err)
-        res.status(500).json({ success: false, message: "Server error" })
-    }
-})*/
-// router.post('/profile/:id', async (req,res) => {
-//     const username = req.cookies.username;
-//     if (!isUserLoggedIn(req)) {
-//         return res.redirect('/login');
-//     }
-    
-//     try {
-//         const user = await User.findById(req.params.id);
-//         if (!user) {
-//             return res.status(404).send("User not found");
-//         }
-
-//         res.render('profile', { username, email });
-//     } catch (err) {
-//         console.error("Error fetching user details:", err);
-//         res.status(500).send("Failed to load user details");
-//     }
-// });
 
 router.post('/profile/edit',  async (req, res) => {
 	try {

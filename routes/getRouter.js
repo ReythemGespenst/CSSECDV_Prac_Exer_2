@@ -33,7 +33,7 @@ router.get('/dashboard', async (req, res) => {
     const roles = await getUserRoles(user._id)
 
     res.render("dashboard", {
-        username, roles
+        username: user.display_name, roles
     })
 })
 
