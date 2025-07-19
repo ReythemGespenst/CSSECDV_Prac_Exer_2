@@ -29,14 +29,17 @@ router.get('/dashboard', (req,res) => {
     res.render("dashboard", {username })
 });
 
-router.get('/profile/:id', async (req,res) => {
+router.get('/profile', async (req,res) => {
     const username = req.cookies.username;
+    const email = req.cookies.email;
     if (!isUserLoggedIn(req)) {
         return res.redirect('/login');
     }
-    console.log("user details: ", req.username);
+    console.log("user details: ", username, email);
     try {
-        const user = await collection.findId(req.user._id);
+        const user = await collection.findOne({username: username});
+        console.log("Retrieved user details: ", user);
+        
         if (!user) {
             return res.status(404).send("User not found");
         }
