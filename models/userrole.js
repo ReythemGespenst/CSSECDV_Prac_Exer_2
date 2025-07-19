@@ -8,7 +8,7 @@ const userRoleSchema = new mongoose.Schema({
 	},
 	role: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Role',
+		ref: 'Roles',
 		required: true
 	},
 	assigned_at: {

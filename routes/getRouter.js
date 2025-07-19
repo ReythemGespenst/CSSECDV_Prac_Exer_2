@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const {isUserLoggedIn} = require('./util')
+const { getUserRoles } = require('../helpers/UserRoleHelper')
+const User = require('../models/user')
 
 router.get('/', (req, res) => {
     res.redirect("/login")
@@ -19,13 +21,18 @@ router.get('/register', (req, res) => {
 })
 
 
-router.get('/dashboard', (req,res) => {
+router.get('/dashboard', async (req,res) => {
 	const username = req.cookies.username;
     if (!isUserLoggedIn(req)){
         return res.redirect('/login')
     }
-   
-    res.render("dashboard", {username })
+
+    const user = await User.findOne({ username: username })
+    const roles = await getUserRoles(user._id)
+
+    res.render("dashboard", {
+        username, roles 
+        })
 })
 
 module.exports = router

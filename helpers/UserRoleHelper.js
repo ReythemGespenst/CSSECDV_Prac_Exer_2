@@ -25,7 +25,7 @@ async function updateUserRoles(userId, roleIds){
 
 async function getUserRoles(userId){
 	const userRoles = await userRole.find({user: userId}).populate('role', 'name');
-	return userRoles.map(ur => ur.role);
+	return userRoles.map(ur => ur.role.name);
 }
 
 module.exports = {

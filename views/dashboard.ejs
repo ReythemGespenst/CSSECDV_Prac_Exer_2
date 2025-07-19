@@ -21,6 +21,12 @@
 </head>
 <body>
 	<p>Welcome, user <p style="color:green;"><%= username %></p></p>
+	<p>Your roles:</p>
+<ul>
+	<% roles.forEach(role => { %>
+		<li><%= role %></li>
+	<% }) %>
+</ul>
 
 	<!-- Logout Form -->
 	<form action="/post/signout" method="POST">
