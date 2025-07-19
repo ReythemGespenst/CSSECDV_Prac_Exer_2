@@ -20,12 +20,12 @@
 				<td><%= user.display_name %></td>
 				<td><%= user.email %></td>
 				<td>
-					<input type="hidden" name="userId" value="<%= user._id %>">
+					<input type="hidden" name="users[<%= user._id %>][userId]" value="<%= user._id %>">
 					<% ['default', 'admin', 'manager'].forEach(role => { %>
 						<label>
 							<input
 									type="checkbox"
-									name="roleIds"
+									name="users[<%= user._id %>][roleIds][]"
 									value="<%= role %>"
 									<%= roles && roles.includes(role) ? 'checked' : '' %>>
 							<%= role %>
