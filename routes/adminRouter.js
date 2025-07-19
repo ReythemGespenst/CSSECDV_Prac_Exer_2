@@ -128,7 +128,7 @@ router.get('/admin', requireRole(['admin']), async (req, res) => {
 	}
 });
 
-router.post('/admin/update-roles', requireRole(['admin']), async (req, res) => {
+router.post('/update-roles', requireRole(['admin']), async (req, res) => {
 	const { userId, roleIds } = req.body;
 
 	if (!mongoose.Types.ObjectId.isValid(userId)) {
