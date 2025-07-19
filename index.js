@@ -11,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter');
 const adminRouters = require('./routes/adminRouter');
+const { requirePermission } = require('./middleware/auth');
 // const { default: mongoose } = require('mongoose');
 
 app.use(cookieParser());
@@ -21,7 +22,7 @@ app.use(express.urlencoded({extended: true}))
 
 app.use("/", getRouters)
 app.use("/post", postRouters)
-app.use("/admin", adminRouters)
+app.use("/admin", requirePermission('admin_access'), adminRouters)
 
 /*
 app.use(session({

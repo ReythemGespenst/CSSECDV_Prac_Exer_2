@@ -19,7 +19,7 @@ async function getUserPermissions(userId) {
 
 async function userHasPermission(userId, requiredPermission){
 	const permissions = await getUserPermissions(userId);
-	return permissions.include(requiredPermission);
+	return permissions.includes(requiredPermission);
 }
 
 module.exports = {

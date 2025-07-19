@@ -6,7 +6,7 @@ const UserRole = require('../models/userrole');
 const Role = require('../models/roles');
 
 const {updateUserRoles, getUserRoles} = require('../helpers/UserRoleHelper');
-const { requireRole } = require('../middleware/auth');
+const { requireRole, requirePermission } = require('../middleware/auth');
 
 router.post('/assign-roles', async (req,res) => {
 	const { userId, roleIds } = req.body;
@@ -29,17 +29,13 @@ router.post('/assign-roles', async (req,res) => {
 
 });
 
-router.get('/users',  requireRole(['admin', 'manager']), async (req, res) => {
+router.get('/users', requireRole(['admin', 'manager']), async (req, res) => {
 	const username = req.cookies.username;
 	const roles = []
 
 
 	try {
 		const users = await User.find();
-
-
-
-// success case
 
 		res.render('users', { username, users });
 	} catch (err) {
@@ -48,7 +44,7 @@ router.get('/users',  requireRole(['admin', 'manager']), async (req, res) => {
 	}
 });
 
-router.get('/delete', async (req, res) => {
+router.get('/delete', requireRole(['admin']), requirePermission('manage_users'), async (req, res) => {
 	const username = req.cookies.username;
 
 	try {

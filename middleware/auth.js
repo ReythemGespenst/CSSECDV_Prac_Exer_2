@@ -19,7 +19,6 @@ function requireRole(allowedRoles) {
 			if (!hasPermission) {
 				return res.status(403).json({ error: 'Insufficient permissions (role required) ' });
 			}
-			console.log('reached')
 			next();
 
 		} catch (err) {
@@ -32,23 +31,45 @@ function requireRole(allowedRoles) {
 function requirePermission(requiredPermission) {
 	return async (req, res, next) => {
 		try {
-			if (!req.user) {
-				return res.status(401).json({ error: 'Authentication required' });
+
+			const username = req.cookies.username;
+
+			if (!username) {return res.redirect('/login');}
+
+			const user = await User.findOne({ username: username });
+
+			const hasPermission = await userHasPermission(user._id, requiredPermission)
+
+			if (!hasPermission) {
+				return res.status(403).json({ error: 'Insufficient permissions (permission required) ' });
 			}
-
-			const hasPerm = await userHasPermission(req.user._id, requiredPermission);
-
-			if (!hasPerm) {
-				return res.status(403).json({ error: 'Insufficient permissions' });
-			}
-
 			next();
+
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ error: 'Permission check failed' });
+			res.status(500).json({ error: 'Authorization check failed' });
 		}
 	}
 }
+
+	// 	{
+	// 	try {
+	// 		if (!req.user) {
+	// 			return res.status(401).json({ error: 'Authentication required' });
+	// 		}
+
+	// 		const hasPerm = await userHasPermission(req.user._id, requiredPermission);
+
+	// 		if (!hasPerm) {
+	// 			return res.status(403).json({ error: 'Insufficient permissions' });
+	// 		}
+
+	// 		next();
+	// 	} catch (err) {
+	// 		console.error(err);
+	// 		res.status(500).json({ error: 'Permission check failed' });
+	// 	}
+	// }
 
 module.exports = {
 	requireRole,
