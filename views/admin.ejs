@@ -1,10 +1,42 @@
 <html>
-<head><link rel="stylesheet" type="text/css" href="/styles.css">
+<head>
+	<link rel="stylesheet" type="text/css" href="/styles.css">
 </head>
 <body>
 <p>Welcome, admin <p style="color:green;"><%= username %></p></p>
-	<form action="/post/signout" method="POST">
-		<input type="submit" value="Logout">
-	</form>
+<h2>Manage Users</h2>
+<form action="/admin/update-roles" method="POST">
+	<table>
+		<thead>
+		<tr>
+			<th>Username</th>
+			<th>Email</th>
+			<th>Roles</th>
+		</tr>
+		</thead>
+		<tbody>
+		<% usersWithRoles.forEach(({ user, roles }) => { %>
+			<tr>
+				<td><%= user.display_name %></td>
+				<td><%= user.email %></td>
+				<td>
+					<input type="hidden" name="userId" value="<%= user._id %>">
+					<% ['default', 'admin', 'manager'].forEach(role => { %>
+						<label>
+							<input
+									type="checkbox"
+									name="roleIds"
+									value="<%= role %>"
+									<%= roles && roles.includes(role) ? 'checked' : '' %>>
+							<%= role %>
+						</label>
+					<% }) %>
+				</td>
+			</tr>
+		<% }) %>
+		</tbody>
+	</table>
+	<button type="submit">Update Roles</button>
+</form>
 </body>
 </html>
