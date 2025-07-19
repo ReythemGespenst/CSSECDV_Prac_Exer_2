@@ -44,7 +44,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td><a href="/users">/users</a></td>
+				<td><a href="/admin/users">/users</a></td>
 				<td>Admin, Manager</td>
 			</tr>
 			<tr>
@@ -61,5 +61,10 @@
 			</tr>
 		</tbody>
 	</table>
+	<div class="error" style="color: red; margin-top: 20px;">
+		<% if (error) { %>
+			<p><%= error %></p>
+		<% } %>
+	</div>
 </body>
 </html>
