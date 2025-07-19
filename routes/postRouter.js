@@ -288,6 +288,43 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" })
     }
 })*/
+// router.post('/profile/:id', async (req,res) => {
+//     const username = req.cookies.username;
+//     if (!isUserLoggedIn(req)) {
+//         return res.redirect('/login');
+//     }
+    
+//     try {
+//         const user = await User.findById(req.params.id);
+//         if (!user) {
+//             return res.status(404).send("User not found");
+//         }
+
+//         res.render('profile', { username, email });
+//     } catch (err) {
+//         console.error("Error fetching user details:", err);
+//         res.status(500).send("Failed to load user details");
+//     }
+// });
+
+router.post('/profile/edit',  (req, res) => {
+	try {
+		const { display_name, email } = req.body;
+		const userId = req.user._id;
+
+		collection.findByIdAndUpdate(userId, {
+			display_name: display_name,
+			email: email
+		}, { new: true });
+
+		res.redirect('/dashboard');
+	} catch (err) {
+		console.error(err);
+		res.status(500).send('Error updating profile');
+	}
+});
+
+
 router.post('/signout', (req,res) => {
 });
 
