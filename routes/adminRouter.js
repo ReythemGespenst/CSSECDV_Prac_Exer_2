@@ -5,7 +5,7 @@ const User = require('../models/user');
 const UserRole = require('../models/userrole');
 const Role = require('../models/roles');
 
-const {updateUserRoles} = require('../helpers/UserRoleHelper');
+const {updateUserRoles, getUserRoles} = require('../helpers/UserRoleHelper');
 
 router.post('/assign-roles', async (req,res) => {
 	const { userId, roleIds } = req.body;
@@ -41,9 +41,9 @@ router.get('/users', async (req, res) => {
 			return res.render('dashboard', { username, error: 'User not found' });
 		}
 
-		const roles = getUserRoles(user._id);
+		const roles = await getUserRoles(user._id);
 
-		if (roles.includes('admin') || roles.includes('manager')){
+		if (!roles.includes('admin') && !roles.includes('manager')) {
 			return res.render('dashboard', { username, roles, error: 'Access denied: Insufficient permissions' });
 		}
 
