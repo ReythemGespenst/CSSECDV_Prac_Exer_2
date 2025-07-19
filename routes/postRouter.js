@@ -5,6 +5,7 @@ const Role = require("../models/roles");
 const userRole = require("../models/userrole");
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const User = require('../models/user')
 
 const usernameBlackList = [
     'admin',
@@ -307,12 +308,15 @@ router.post('/login', async (req, res) => {
 //     }
 // });
 
-router.post('/profile/edit',  (req, res) => {
+router.post('/profile/edit',  async (req, res) => {
 	try {
 		const { display_name, email } = req.body;
-		const userId = req.user._id;
+        const username = req.cookies.username;
+        
+        const user = await User.findOne({ username: username });
+		const userId = user._id;
 
-		collection.findByIdAndUpdate(userId, {
+		await User.findByIdAndUpdate(userId, {
 			display_name: display_name,
 			email: email
 		}, { new: true });
