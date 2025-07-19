@@ -1,27 +1,31 @@
-const {getUserPermissions, userHasPermission} = require('../helpers/permissionHelper');
-const {getUserRoles} = require('../helpers/UserRoleHelper');
+const { getUserPermissions, userHasPermission } = require('../helpers/permissionHelper');
+const { getUserRoles } = require('../helpers/UserRoleHelper');
+const User = require('../models/user')
 
 function requireRole(allowedRoles) {
-	return async(req, res, next) => {
+	return async (req, res, next) => {
 		try {
-			if(!req.user){
-				return;
+
+			const username = req.cookies.username;
+
+			if (!username) {
+				return res.redirect('/login');
 			}
 
-			const roles = await getUserRoles(req.user._id);
-			const roleNames = roles.map(r => r.name);
+			const user = await User.findOne({ username: username });
+			const roles = await getUserRoles(user._id);
+			const hasPermission = roles.some(role => allowedRoles.includes(role));
 
-			const hasRole = allowedRoles.some(role => roleNames.includes(role));
-
-			if(!hasRole) {
-				return res.status(403).json({error: 'Insufficient permissions (role required) '});
+			if (!hasPermission) {
+				return res.status(403).json({ error: 'Insufficient permissions (role required) ' });
 			}
-
+			console.log('reached')
 			next();
- 		} catch (err) {
- 			console.error(err);
- 			res.status(500).json({error: 'Authorization check failed'});
- 		}
+
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ error: 'Authorization check failed' });
+		}
 	}
 }
 
@@ -29,19 +33,19 @@ function requirePermission(requiredPermission) {
 	return async (req, res, next) => {
 		try {
 			if (!req.user) {
-				return res.status(401).json({error: 'Authentication required'});
+				return res.status(401).json({ error: 'Authentication required' });
 			}
 
 			const hasPerm = await userHasPermission(req.user._id, requiredPermission);
 
 			if (!hasPerm) {
-				return res.status(403).json({error: 'Insufficient permissions'});
+				return res.status(403).json({ error: 'Insufficient permissions' });
 			}
 
 			next();
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({error: 'Permission check failed'});
+			res.status(500).json({ error: 'Permission check failed' });
 		}
 	}
 }

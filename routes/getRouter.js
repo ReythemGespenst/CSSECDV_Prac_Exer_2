@@ -3,6 +3,7 @@ const router = express.Router()
 const {isUserLoggedIn} = require('./util')
 const { getUserRoles } = require('../helpers/UserRoleHelper')
 const User = require('../models/user')
+const { requireRole } = require('../middleware/auth')
 
 router.get('/', (req, res) => {
     res.redirect("/login")
@@ -23,6 +24,7 @@ router.get('/register', (req, res) => {
 
 router.get('/dashboard', async (req,res) => {
 	const username = req.cookies.username;
+
     if (!isUserLoggedIn(req)){
         return res.redirect('/login')
     }
