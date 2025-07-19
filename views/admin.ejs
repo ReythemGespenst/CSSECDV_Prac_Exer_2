@@ -17,11 +17,11 @@
 		<tbody>
 		<% usersWithRoles.forEach(({ user, roles }) => { %>
 			<tr>
-				<td><%= user.display_name %></td>
+				<td><%= user.username %></td>
 				<td><%= user.email %></td>
 				<td>
 					<input type="hidden" name="users[<%= user._id %>][userId]" value="<%= user._id %>">
-					<% ['default', 'admin', 'manager'].forEach(role => { %>
+					<% ['user', 'admin', 'manager'].forEach(role => { %>
 						<label>
 							<input
 									type="checkbox"

@@ -5,18 +5,18 @@ const User = require('../models/user');
 const UserRole = require('../models/userrole');
 const Role = require('../models/roles');
 
-const {updateUserRoles, getUserRoles} = require('../helpers/UserRoleHelper');
+const { updateUserRoles, getUserRoles } = require('../helpers/UserRoleHelper');
 const { requireRole, requirePermission } = require('../middleware/auth');
 
-router.post('/assign-roles', async (req,res) => {
+router.post('/assign-roles', async (req, res) => {
 	const { userId, roleIds } = req.body;
 
-	if(!mongoose.Types.ObjectId.isValid(userId)){
-		return res.status(400).json({error: 'Invalid userId'});
+	if (!mongoose.Types.ObjectId.isValid(userId)) {
+		return res.status(400).json({ error: 'Invalid userId' });
 	}
 
-	if(!Array.isArray(roleIds) || roleIds.some(id => !mongoose.Types.ObjectId.isValid(id))) {
-		return res.status(400).json({error: "Invalid roleIds"});
+	if (!Array.isArray(roleIds) || roleIds.some(id => !mongoose.Types.ObjectId.isValid(id))) {
+		return res.status(400).json({ error: "Invalid roleIds" });
 	}
 
 	try {
@@ -57,7 +57,7 @@ router.get('/delete', requireRole(['admin']), requirePermission('manage_users'),
 
 		const roles = await getUserRoles(adminUser._id);
 
-		if (!roles.includes('admin')){
+		if (!roles.includes('admin')) {
 			return res.render('dashboard', { username, roles, error: 'Access denied: Insufficient permissions' });
 		}
 
@@ -101,7 +101,7 @@ router.get('/admin', requireRole(['admin']), async (req, res) => {
 
 	try {
 		// Fetch the logged-in admin user
-		adminUser = await User.findOne({ display_name: username });
+		adminUser = await User.findOne({ username: username });
 
 		if (!adminUser) {
 			return res.render('dashboard', { username, roles: roleList, error: 'Admin user not found' });
@@ -120,8 +120,8 @@ router.get('/admin', requireRole(['admin']), async (req, res) => {
 				return { user, roles };
 			})
 		);
-
 		res.render('admin', { username, usersWithRoles });
+
 	} catch (err) {
 		console.error(err);
 		res.render('dashboard', { username, roles: roleList, error: 'An error occurred. Please try again.' });
@@ -129,23 +129,29 @@ router.get('/admin', requireRole(['admin']), async (req, res) => {
 });
 
 router.post('/update-roles', requireRole(['admin']), async (req, res) => {
-	const { userId, roleIds } = req.body;
+	const users = req.body.users;
 
-	if (!mongoose.Types.ObjectId.isValid(userId)) {
-		return res.status(400).json({ error: 'Invalid userId' });
-	}
-
-	if (!Array.isArray(roleIds) || roleIds.some(id => !mongoose.Types.ObjectId.isValid(id))) {
-		return res.status(400).json({ error: 'Invalid roleIds' });
-	}
+	console.log(users)
 
 	try {
-		// Update roles using the helper
-		await updateUserRoles(userId, roleIds);
-		res.redirect('/admin');
+		for (const userId in users) {
+			const roleNames = users[userId].roleIds || [];
+
+			const roleDocs = await Role.find({ name: { $in: roleNames } });
+
+			await UserRole.deleteMany({ user: userId });
+
+			const userRoleDocs = roleDocs.map(role => ({
+				user: userId,
+				role: role._id
+			}));
+			await UserRole.insertMany(userRoleDocs);
+		}
+
+		res.redirect('/dashboard');
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ error: 'Failed to update roles' });
+		res.status(500).send("Failed to update roles.");
 	}
 });
 
