@@ -195,7 +195,7 @@ router.post('/register', async (req, res) => {
                     });
 
                     console.log("you are now registered");
-					res.setHeader('Set-Cookie', `username=${newUser.display_name}; HttpOnly; Path=/; Max-Age=3600`);
+					res.setHeader('Set-Cookie', `username=${newUser.username}; HttpOnly; Path=/; Max-Age=3600`);
                     return res.redirect('/');
 
                 } catch (error) {
