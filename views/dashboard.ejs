@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<link rel="stylesheet" type="text/css" href="/styles.css">
 	<title>Dashboard</title>
@@ -9,24 +10,34 @@
 			margin-top: 20px;
 			border-collapse: collapse;
 		}
-		th, td {
+
+		th,
+		td {
 			padding: 10px;
 			border: 1px solid #ccc;
 			text-align: left;
 		}
+
 		th {
 			background-color: #f2f2f2;
 		}
 	</style>
 </head>
+
 <body>
-	<p>Welcome, user <p style="color:green;"><%= username %></p></p>
+	<p>Welcome, user
+	<p style="color:green;">
+		<%= username %>
+	</p>
+	</p>
 	<p>Your roles:</p>
-<ul>
-	<% roles.forEach(role => { %>
-		<li><%= role %></li>
-	<% }) %>
-</ul>
+	<ul>
+		<% roles.forEach(role=> { %>
+			<li>
+				<%= role %>
+			</li>
+			<% }) %>
+	</ul>
 
 	<!-- Logout Form -->
 	<form action="/post/signout" method="POST">
@@ -62,9 +73,13 @@
 		</tbody>
 	</table>
 	<div class="error" style="color: red; margin-top: 20px;">
-		<% if (error) { %>
-			<p><%= error %></p>
-		<% } %>
+		<% if (typeof error !=='undefined' && error) { %>
+			<p style="color:red;">
+				<%= error %>
+			</p>
+			<% } %>
+
 	</div>
 </body>
+
 </html>

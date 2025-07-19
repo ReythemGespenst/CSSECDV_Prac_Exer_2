@@ -30,6 +30,8 @@ router.post('/assign-roles', async (req,res) => {
 
 router.get('/users', async (req, res) => {
 	const username = req.cookies.username;
+	const roles = []
+
 
 	try {
 		// Fetch the user's role from the database
@@ -39,21 +41,29 @@ router.get('/users', async (req, res) => {
 			return res.render('dashboard', { username, error: 'User not found' });
 		}
 
-		// Check if the role is "admin" or "manager"
-		const userRoleData = await UserRole.findOne({ user: user._id }).populate({
-			path: 'role',
-			model: 'Roles' // Ensure the correct model name is used
-		});
+		const roles = getUserRoles(user._id);
 
-		if (!userRoleData || (userRoleData.role.name !== 'admin' && userRoleData.role.name !== 'manager')) {
-			return res.render('dashboard', { username, error: 'Access denied: Insufficient permissions' });
+		if (roles.includes('admin') || roles.includes('manager')){
+			return res.render('dashboard', { username, roles, error: 'Access denied: Insufficient permissions' });
 		}
+
+// ! in case above code does not work 
+		// Check if the role is "admin" or "manager"
+		// const userRoleData = await UserRole.findOne({ user: user._id }).populate({
+		// 	path: 'role',
+		// 	model: 'Roles' // Ensure the correct model name is used
+		// });
+
+		// if (!userRoleData || (userRoleData.role.name !== 'admin' && userRoleData.role.name !== 'manager')) {
+		// 	return res.render('dashboard', { username, roles, error: 'Access denied: Insufficient permissions' });
+		// }
+		
 
 		// Render the users page if the role is valid
 		res.render('users', { username });
 	} catch (err) {
 		console.error(err);
-		res.render('dashboard', { username, error: 'An error occurred. Please try again.' });
+		res.render('dashboard', { username, roles, error: 'An error occurred. Please try again.' });
 	}
 });
 
