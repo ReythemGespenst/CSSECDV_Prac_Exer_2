@@ -1,5 +1,5 @@
 const userRole = require('../models/userrole');
-const role = require('../models/role');
+const role = require('../models/roles');
 
 // helper to remove all the current roles of the user
 async function removeUserRoles(userId){

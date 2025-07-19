@@ -10,7 +10,7 @@ const MongoStore = require('connect-mongo')
 const cookieParser = require('cookie-parser');
 const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter');
-const adminRouters = require('./routes/adminRouters');
+const adminRouters = require('./routes/adminRouter');
 // const { default: mongoose } = require('mongoose');
 
 app.use(cookieParser());
