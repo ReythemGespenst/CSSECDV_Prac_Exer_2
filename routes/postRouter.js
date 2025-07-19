@@ -313,8 +313,8 @@ router.post('/profile/edit',  (req, res) => {
 		const userId = req.user._id;
 
 		collection.findByIdAndUpdate(userId, {
-			display_name,
-			email
+			display_name: display_name,
+			email: email
 		}, { new: true });
 
 		res.redirect('/dashboard');
