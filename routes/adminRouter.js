@@ -4,9 +4,14 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const UserRole = require('../models/userrole');
 const Role = require('../models/roles');
+const { requireAuth } = require('../middleware/auth');
 
 const { updateUserRoles, getUserRoles } = require('../helpers/UserRoleHelper');
 const { requireRole, requirePermission } = require('../middleware/auth');
+
+router.get('/dashboard', requireAuth, (req, res) => {
+	res.render('dashboard', { username: req.session.username });
+});
 
 router.post('/assign-roles', async (req, res) => {
 	const { userId, roleIds } = req.body;

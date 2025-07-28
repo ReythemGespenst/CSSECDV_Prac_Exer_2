@@ -51,6 +51,12 @@ function requirePermission(requiredPermission) {
 		}
 	}
 }
+function requireAuth(req, res, next) {
+	if (!req.session || !req.session.userId) {
+		return res.status(401).send('Unauthorized');
+	}
+	next();
+}
 
 	// 	{
 	// 	try {
@@ -73,5 +79,6 @@ function requirePermission(requiredPermission) {
 
 module.exports = {
 	requireRole,
-	requirePermission
+	requirePermission,
+	requireAuth
 };

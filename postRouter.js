@@ -193,63 +193,98 @@ router.post('/register', async (req, res) => {
 
 });
 
+// router.post('/login', async (req, res) => {
+//     try {
+//         // const user = collection.collection({username: req.body.username, password: req.body.password});
+//         const { username, password } = req.body;
+//
+//         let usernameCheck = validator.trim(username);
+//         usernameCheck = validator.escape(username);
+//
+//         let passwordCheck = validator.trim(password);
+//
+//         const input = usernameCheck.toLowerCase()
+//
+//         if(!input || !password){
+//             return res.render("login", {title: "Login account", error: "Username and password are required"});
+//         }
+//
+//         const user = await collection.findOne({
+//             $or: [
+//                 { username: input },
+//                 { email: input }
+//             ]
+//         })
+//
+//         if (!user) {
+//             return res.render('login', {title: "Login Account", error: "Invalid username or password"});
+//         }
+//
+//         // if credentials match
+//         if (await bcrypt.compare(passwordCheck, user.password_hash)) {
+//             console.log('logged in successfully');
+//             res.setHeader('Set-Cookie', `username=${user.display_name}; HttpOnly; Path=/; Max-Age=3600`);
+//             res.redirect("/dashboard"); // this part will redirect the user to the main page
+//         } else {
+//             console.log('did not login successfully');
+//             res.render("login", { title: "Login Account", error: "Invalid username or password" });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         // res.status(500).send("Error: Username or password is incorrect");
+//         return res.render('login', { error: "Something went wrong, please try again" });
+//     }
+// })
+//
+// router.post('/signout', (req, res) => {
+//     res.setHeader('Set-Cookie', `username=; HttpOnly; Path=/; Max-Age=0`);
+//     return res.redirect('/login');
+//     console.log('Username: ', username)
+//     console.log('Password: ', password)
+// 	if (username === "test" && password === "1234") {
+//         res.json({ success: true })
+//     } else {
+//         res.json({ success: false, message: "Invalid username or password" })
+//     }
+//
+//     //res.redirect('/dashboard')
+//
+// })
+
 router.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
     try {
-        // const user = collection.collection({username: req.body.username, password: req.body.password});
-        const { username, password } = req.body;
-
-        let usernameCheck = validator.trim(username);
-        usernameCheck = validator.escape(username);
-
-        let passwordCheck = validator.trim(password);
-
-        const input = usernameCheck.toLowerCase()
-
-        if(!input || !password){
-            return res.render("login", {title: "Login account", error: "Username and password are required"});
-        }
-
         const user = await collection.findOne({
             $or: [
-                { username: input },
-                { email: input }
+                { username: username.trim().toLowerCase() },
+                { email: username.trim().toLowerCase() }
             ]
-        })
+        });
 
-        if (!user) {
-            return res.render('login', {title: "Login Account", error: "Invalid username or password"});
-        }
-
-        // if credentials match
-        if (await bcrypt.compare(passwordCheck, user.password_hash)) {
-            console.log('logged in successfully');
-            res.setHeader('Set-Cookie', `username=${user.display_name}; HttpOnly; Path=/; Max-Age=3600`);
-            res.redirect("/dashboard"); // this part will redirect the user to the main page
+        if (user && await bcrypt.compare(password, user.password_hash)) {
+            req.session.userId = user._id; // Store user ID in session
+            req.session.lastActivity = Date.now(); // Initialize last activity timestamp
+            res.redirect('/dashboard');
         } else {
-            console.log('did not login successfully');
-            res.render("login", { title: "Login Account", error: "Invalid username or password" });
+            res.render('login', { error: 'Invalid username or password' });
         }
-    } catch (error) {
-        console.log(error);
-        // res.status(500).send("Error: Username or password is incorrect");
-        return res.render('login', { error: "Something went wrong, please try again" });
+    } catch (err) {
+        console.error(err);
+        res.render('login', { error: 'Something went wrong, please try again.' });
     }
-})
+});
 
-router.post('/signout', (req, res) => {
-    res.setHeader('Set-Cookie', `username=; HttpOnly; Path=/; Max-Age=0`);
-    return res.redirect('/login');
-    console.log('Username: ', username)
-    console.log('Password: ', password)
-	if (username === "test" && password === "1234") {
-        res.json({ success: true })
-    } else {
-        res.json({ success: false, message: "Invalid username or password" })
-    }
+router.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            return res.status(500).send('Error logging out.');
+        }
+        res.redirect('/login');
+    });
+});
 
-    //res.redirect('/dashboard')
-	
-})
 router.post('/delete', async (req, res) => {
     const { userId } = req.body;
 

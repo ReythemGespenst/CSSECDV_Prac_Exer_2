@@ -20,6 +20,36 @@ app.use(express.static('js'))
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended: true}))
 
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'default_secret', // Use a secure secret in production
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI, // MongoDB connection string
+        collectionName: 'sessions',
+    }),
+    cookie: {
+        maxAge: 1000 * 60 * 15, // 15 minutes session timeout
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        sameSite: 'strict', // Prevent CSRF attacks
+    }
+}));
+
+app.use((req, res, next) => {
+    if (req.session) {
+        if (req.session.lastActivity && Date.now() - req.session.lastActivity > 1000 * 60 * 15) {
+            req.session.destroy(err => {
+                if (err) console.error('Error destroying session:', err);
+                return res.redirect('/login');
+            });
+        } else {
+            req.session.lastActivity = Date.now(); // Update last activity timestamp
+        }
+    }
+    next();
+});
+
 app.use("/", getRouters)
 app.use("/post", postRouters)
 app.use("/admin", requirePermission('admin_access'), adminRouters)
