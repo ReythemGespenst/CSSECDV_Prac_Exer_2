@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
     const display_name = usernameRaw;
 
     const emailRaw = validator.trim(email);
-    const emailNormalized = validator.normalizeEmail(emailRaw, {all_lowercase: true});
+    const emailNormalized = validator.normalizeEmail(emailRaw, { all_lowercase: true });
 
     const passwordSanitized = validator.trim(password);
     const confirmPassSanitized = validator.trim(confirmPass);
@@ -142,7 +142,7 @@ router.post('/register', async (req, res) => {
         return res.render('register', { error: "Error: Password cannot contain sequential characters" });
     }
 
-    if (/([a-zA-Z])\1{4,}/i.test(passwordSanitized)){
+    if (/([a-zA-Z])\1{4,}/i.test(passwordSanitized)) {
         return res.render('register', { error: "Error: Password cannot contain sequential characters" });
     }
 
@@ -155,14 +155,14 @@ router.post('/register', async (req, res) => {
 
     try {
         // assuming we need to check if there's existing user...
-        const existingUser = await collection.findOne({ username: normalizedUsername});
+        const existingUser = await collection.findOne({ username: normalizedUsername });
         if (existingUser) {
             return res.render('register', { error: "Error: Username already exists" })
         }
 
-        const existingEmail = await collection.findOne({ email: emailNormalized});
+        const existingEmail = await collection.findOne({ email: emailNormalized });
         if (existingEmail) {
-            return res.render('register', {error: "Error: Email already exists"});
+            return res.render('register', { error: "Error: Email already exists" });
         }
 
         bcrypt.genSalt(10, (err, salt) => {
@@ -173,11 +173,11 @@ router.post('/register', async (req, res) => {
                 if (err) throw err;
 
                 try {
-                    const defaultRole = await Role.findOne({name: 'user'});
+                    const defaultRole = await Role.findOne({ name: 'user' });
                     //checks if the defaultRole exists otherwise the website will tell you that the default user role does not exist.
-                    if(!defaultRole) {
+                    if (!defaultRole) {
                         console.error("Default role 'user' not found. Aborting registration.");
-                        return res.render('register', {error: "Registration error: Server-side error, default user role not configured. Please contact support"});
+                        return res.render('register', { error: "Registration error: Server-side error, default user role not configured. Please contact support" });
                     }
 
                     const newUser = await collection.create({
@@ -195,13 +195,13 @@ router.post('/register', async (req, res) => {
                     });
 
                     console.log("you are now registered");
-					res.setHeader('Set-Cookie', `username=${newUser.username}; HttpOnly; Path=/; Max-Age=3600`);
+                    res.setHeader('Set-Cookie', `username=${newUser.username}; HttpOnly; Path=/; Max-Age=3600`);
                     return res.redirect('/');
 
                 } catch (error) {
                     console.error(error);
                     console.log('could not create user. Please try again');
-                    return res.render('register', {error: "Something went wrong, please try again."});
+                    return res.render('register', { error: "Something went wrong, please try again." });
                 }
             });
         });
@@ -225,8 +225,8 @@ router.post('/login', async (req, res) => {
 
         const input = usernameCheck.toLowerCase()
 
-        if(!input || !password){
-            return res.render("login", {title: "Login account", error: "Username and password are required"});
+        if (!input || !password) {
+            return res.render("login", { title: "Login account", error: "Username and password are required" });
         }
 
         const user = await collection.findOne({
@@ -237,14 +237,29 @@ router.post('/login', async (req, res) => {
         })
 
         if (!user) {
-            return res.render('login', {title: "Login Account", error: "Invalid username or password"});
+            return res.render('login', { title: "Login Account", error: "Invalid username or password" });
         }
 
         // if credentials match
         if (await bcrypt.compare(passwordCheck, user.password_hash)) {
             console.log('logged in successfully');
             res.setHeader('Set-Cookie', `username=${user.username}; HttpOnly; Path=/; Max-Age=3600`);
-            res.redirect("/dashboard"); 
+            // ! ---
+            req.session.regenerate((err) => {
+                if (err) {
+                    console.error('Session regeneration error:', err);
+                    return res.render("login", { title: "Login Account", error: "Something went wrong with the session." });
+                }
+
+                req.session.user = {
+                    id: user._id,
+                    username: user.username
+                };
+
+                console.log("Session created:", req.session);
+
+                res.redirect("/dashboard");
+            });
         } else {
             console.log('did not login successfully');
             res.render("login", { title: "Login Account", error: "Invalid username or password" });
@@ -257,42 +272,43 @@ router.post('/login', async (req, res) => {
 })
 
 router.post('/signout', (req, res) => {
-    res.setHeader('Set-Cookie', `username=; HttpOnly; Path=/; Max-Age=0`);
-    return res.redirect('/login');
-    console.log('Username: ', username)
-    console.log('Password: ', password)
-	if (username === "test" && password === "1234") {
-        res.json({ success: true })
-    } else {
-        res.json({ success: false, message: "Invalid username or password" })
-    }
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Session destruction error:', err);
+            return res.status(500).send('Could not log out. Try again.');
+        }
 
-    //res.redirect('/dashboard')
-	
-})
+        // Clear the cookie
+        res.clearCookie('connect.sid', {
+            path: '/', // make sure path matches your session cookie path
+        });
 
-router.post('/profile/edit',  async (req, res) => {
-	try {
-		const { display_name, email } = req.body;
+        res.redirect('/login');
+    });
+});
+
+router.post('/profile/edit', async (req, res) => {
+    try {
+        const { display_name, email } = req.body;
         const username = req.cookies.username;
-        
+
         const user = await User.findOne({ username: username });
-		const userId = user._id;
+        const userId = user._id;
 
-		await User.findByIdAndUpdate(userId, {
-			display_name: display_name,
-			email: email
-		}, { new: true });
+        await User.findByIdAndUpdate(userId, {
+            display_name: display_name,
+            email: email
+        }, { new: true });
 
-		res.redirect('/dashboard');
-	} catch (err) {
-		console.error(err);
-		res.status(500).send('Error updating profile');
-	}
+        res.redirect('/dashboard');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error updating profile');
+    }
 });
 
 
-router.post('/signout', (req,res) => {
+router.post('/signout', (req, res) => {
 });
 
 

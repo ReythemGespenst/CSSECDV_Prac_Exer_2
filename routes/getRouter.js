@@ -3,7 +3,7 @@ const router = express.Router()
 const { isUserLoggedIn } = require('./util')
 const { getUserRoles } = require('../helpers/UserRoleHelper')
 const User = require('../models/user')
-const { requireRole, requirePermission } = require('../middleware/auth')
+const { requireRole, requirePermission, isAuthenticated } = require('../middleware/auth')
 
 router.get('/', (req, res) => {
     res.redirect("/login")
@@ -22,15 +22,11 @@ router.get('/register', (req, res) => {
 })
 
 
-router.get('/dashboard', async (req, res) => {
-    const username = req.cookies.username;
-
-    if (!isUserLoggedIn(req)) {
-        return res.redirect('/login')
-    }
+router.get('/dashboard', isAuthenticated, async (req, res) => {
+    const username = req.session.user.username;
 
     const user = await User.findOne({ username: username })
-    const roles = await getUserRoles(user._id)
+    const roles = await getUserRoles(user.id)
 
     res.render("dashboard", {
         username: user.display_name, roles

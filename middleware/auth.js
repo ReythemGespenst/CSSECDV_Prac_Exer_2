@@ -6,7 +6,7 @@ function requireRole(allowedRoles) {
 	return async (req, res, next) => {
 		try {
 
-			const username = req.cookies.username;
+			const username = req.session.user.username;
 
 			if (!username) {
 				return res.redirect('/login');
@@ -31,10 +31,9 @@ function requireRole(allowedRoles) {
 function requirePermission(requiredPermission) {
 	return async (req, res, next) => {
 		try {
+			const username = req.session.user.username;
 
-			const username = req.cookies.username;
-
-			if (!username) {return res.redirect('/login');}
+			if (!username) { return res.redirect('/login'); }
 
 			const user = await User.findOne({ username: username });
 
@@ -51,34 +50,40 @@ function requirePermission(requiredPermission) {
 		}
 	}
 }
-function requireAuth(req, res, next) {
-	if (!req.session || !req.session.userId) {
-		return res.status(401).send('Unauthorized');
-	}
-	next();
+function isAuthenticated(req, res, next) {
+    console.log('Checking session:', req.session);
+    
+    if (req.session && req.session.user) {
+        console.log('Authenticated as:', req.session.user.username);
+        return next();
+    }
+
+    console.log('Not authenticated, redirecting...');
+    return res.redirect('/login');
 }
 
-	// 	{
-	// 	try {
-	// 		if (!req.user) {
-	// 			return res.status(401).json({ error: 'Authentication required' });
-	// 		}
 
-	// 		const hasPerm = await userHasPermission(req.user._id, requiredPermission);
+// 	{
+// 	try {
+// 		if (!req.user) {
+// 			return res.status(401).json({ error: 'Authentication required' });
+// 		}
 
-	// 		if (!hasPerm) {
-	// 			return res.status(403).json({ error: 'Insufficient permissions' });
-	// 		}
+// 		const hasPerm = await userHasPermission(req.user._id, requiredPermission);
 
-	// 		next();
-	// 	} catch (err) {
-	// 		console.error(err);
-	// 		res.status(500).json({ error: 'Permission check failed' });
-	// 	}
-	// }
+// 		if (!hasPerm) {
+// 			return res.status(403).json({ error: 'Insufficient permissions' });
+// 		}
+
+// 		next();
+// 	} catch (err) {
+// 		console.error(err);
+// 		res.status(500).json({ error: 'Permission check failed' });
+// 	}
+// }
 
 module.exports = {
 	requireRole,
 	requirePermission,
-	requireAuth
+	isAuthenticated
 };

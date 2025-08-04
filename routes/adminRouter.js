@@ -4,14 +4,14 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const UserRole = require('../models/userrole');
 const Role = require('../models/roles');
-const { requireAuth } = require('../middleware/auth');
+// const { requireAuth } = require('../middleware/auth');
 
 const { updateUserRoles, getUserRoles } = require('../helpers/UserRoleHelper');
 const { requireRole, requirePermission } = require('../middleware/auth');
 
-router.get('/dashboard', requireAuth, (req, res) => {
-	res.render('dashboard', { username: req.session.username });
-});
+// router.get('/dashboard', requireAuth, (req, res) => {
+// 	res.render('dashboard', { username: req.session.username });
+// });
 
 router.post('/assign-roles', async (req, res) => {
 	const { userId, roleIds } = req.body;
@@ -35,7 +35,7 @@ router.post('/assign-roles', async (req, res) => {
 });
 
 router.get('/users', requireRole(['admin', 'manager']), async (req, res) => {
-	const username = req.cookies.username;
+	const username = req.session.user.username;
 	const roles = []
 
 
@@ -50,21 +50,13 @@ router.get('/users', requireRole(['admin', 'manager']), async (req, res) => {
 });
 
 router.get('/delete', requireRole(['admin']), requirePermission('manage_users'), async (req, res) => {
-	const username = req.cookies.username;
+	const username = req.session.user.username;
 
 	try {
 		// Fetch the logged-in admin user
-		const adminUser = await User.findOne({ display_name: username });
+		const adminUser = await User.findOne({ username: username });
 
-		if (!adminUser) {
-			return res.render('dashboard', { username, error: 'Admin user not found' });
-		}
-
-		const roles = await getUserRoles(adminUser._id);
-
-		if (!roles.includes('admin')) {
-			return res.render('dashboard', { username, roles, error: 'Access denied: Insufficient permissions' });
-		}
+		const roles = await getUserRoles(adminUser.id);
 
 		// Fetch all users excluding the admin
 		const users = await User.find({ _id: { $ne: adminUser._id } });
@@ -98,7 +90,7 @@ router.post('/delete-user', async (req, res) => {
 });
 
 router.get('/admin', requireRole(['admin']), async (req, res) => {
-	const username = req.cookies.username;
+	const username = req.session.user.username;
 
 	// Initialize roleList before the try block
 	let roleList = [];
