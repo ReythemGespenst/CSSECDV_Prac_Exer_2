@@ -243,7 +243,6 @@ router.post('/login', async (req, res) => {
         // if credentials match
         if (await bcrypt.compare(passwordCheck, user.password_hash)) {
             console.log('logged in successfully');
-            res.setHeader('Set-Cookie', `username=${user.username}; HttpOnly; Path=/; Max-Age=3600`);
             // ! ---
             req.session.regenerate((err) => {
                 if (err) {
