@@ -6,6 +6,7 @@ const User = require('../models/user')
 const { requireRole, requirePermission, isAuthenticated } = require('../middleware/auth')
 
 router.get('/', (req, res) => {
+    console.log('Redirecting 5');
     res.redirect("/login")
 })
 
@@ -13,7 +14,7 @@ router.get('/login', (req, res) => {
     if (!isUserLoggedIn(req)) {
         return res.render("login", { error: null })
     }
-
+    console.log('Redirecting 6');
     res.redirect('/dashboard')
 })
 

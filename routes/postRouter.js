@@ -195,7 +195,8 @@ router.post('/register', async (req, res) => {
                     });
 
                     console.log("you are now registered");
-                    res.setHeader('Set-Cookie', `username=${newUser.username}; HttpOnly; Path=/; Max-Age=3600`);
+                    // res.setHeader('Set-Cookie', `username=${newUser.username}; HttpOnly; Path=/; Max-Age=3600`);
+                    console.log('Redirecting 7');
                     return res.redirect('/');
 
                 } catch (error) {
@@ -208,6 +209,7 @@ router.post('/register', async (req, res) => {
     } catch (err) {
         console.error(error);
         console.log('could not create user. Please try again');
+        console.log('Redirecting 8');
         res.redirect('/register');
     }
 
@@ -215,7 +217,6 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        // const user = collection.collection({username: req.body.username, password: req.body.password});
         const { username, password } = req.body;
 
         let usernameCheck = validator.trim(username);
@@ -223,7 +224,7 @@ router.post('/login', async (req, res) => {
 
         let passwordCheck = validator.trim(password);
 
-        const input = usernameCheck.toLowerCase()
+        const input = usernameCheck.toLowerCase();
 
         if (!input || !password) {
             return res.render("login", { title: "Login account", error: "Username and password are required" });
@@ -234,16 +235,20 @@ router.post('/login', async (req, res) => {
                 { username: input },
                 { email: input }
             ]
-        })
+        });
 
         if (!user) {
             return res.render('login', { title: "Login Account", error: "Invalid username or password" });
         }
 
-        // if credentials match
         if (await bcrypt.compare(passwordCheck, user.password_hash)) {
-            console.log('logged in successfully');
-            // ! ---
+            console.log('Logged in successfully');
+
+            if (!res.headersSent && !req.session) {
+                console.error('Session is not initialized.');
+                return res.render("login", { title: "Login Account", error: "Session error. Please try again." });
+            }
+
             req.session.regenerate((err) => {
                 if (err) {
                     console.error('Session regeneration error:', err);
@@ -255,36 +260,52 @@ router.post('/login', async (req, res) => {
                     username: user.username
                 };
 
-                console.log("Session created:", req.session);
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Session save error:', err);
+                        return res.render("login", { title: "Login Account", error: "Session save failed. Please try again." });
+                    }
 
-                res.redirect("/dashboard");
+                    console.log("Session created and saved:", req.session);
+                    console.log('Redirecting to dashboard');
+                    return res.redirect("/dashboard");
+                });
             });
         } else {
-            console.log('did not login successfully');
-            res.render("login", { title: "Login Account", error: "Invalid username or password" });
+            console.log('Did not log in successfully');
+            return res.render("login", { title: "Login Account", error: "Invalid username or password" });
         }
     } catch (error) {
-        console.log(error);
-        // res.status(500).send("Error: Username or password is incorrect");
+        console.error(error);
         return res.render('login', { error: "Something went wrong, please try again" });
     }
-})
+});
+
 
 router.post('/signout', (req, res) => {
+    // if (!req.session) {
+    //     console.error('Session is not initialized.');
+    //     return res.status(400).send('Session not found.');
+    // }
+
     req.session.destroy(err => {
         if (err) {
             console.error('Session destruction error:', err);
-            return res.status(500).send('Could not log out. Try again.');
+            if (!res.headersSent) {
+                return res.status(500).send('Could not log out. Try again.');
+            }
         }
 
-        // Clear the cookie
-        res.clearCookie('connect.sid', {
-            path: '/', // make sure path matches your session cookie path
-        });
-
-        res.redirect('/login');
+        if (!res.headersSent) {
+            res.clearCookie('connect.sid', {
+                path: '/',
+            });
+            console.log('Redirecting 10');
+            return res.redirect('/login');
+        }
     });
 });
+
 
 router.post('/profile/edit', async (req, res) => {
     try {
@@ -298,17 +319,12 @@ router.post('/profile/edit', async (req, res) => {
             display_name: display_name,
             email: email
         }, { new: true });
-
+        console.log('Redirecting 11');
         res.redirect('/dashboard');
     } catch (err) {
         console.error(err);
         res.status(500).send('Error updating profile');
     }
 });
-
-
-router.post('/signout', (req, res) => {
-});
-
 
 module.exports = router

@@ -26,9 +26,11 @@ router.post('/assign-roles', async (req, res) => {
 
 	try {
 		await updateUserRoles(userId, roleIds);
+		console.log('Redirecting 1');
 		res.redirect('/');
 	} catch (err) {
 		console.error(err);
+		console.log('Redirecting 2');
 		res.redirect('/');
 	}
 
@@ -81,7 +83,7 @@ router.post('/delete-user', async (req, res) => {
 
 		// Delete the user's roles from the user_roles schema
 		await UserRole.deleteMany({ user: userId });
-
+		console.log('Redirecting 3');
 		res.redirect('/admin/delete');
 	} catch (err) {
 		console.error(err);
@@ -144,7 +146,7 @@ router.post('/update-roles', requireRole(['admin']), async (req, res) => {
 			}));
 			await UserRole.insertMany(userRoleDocs);
 		}
-
+		console.log('Redirecting 4');
 		res.redirect('/dashboard');
 	} catch (err) {
 		console.error(err);

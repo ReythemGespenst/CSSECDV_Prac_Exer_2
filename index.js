@@ -12,7 +12,6 @@ const getRouters = require('./routes/getRouter')
 const postRouters = require('./routes/postRouter');
 const adminRouters = require('./routes/adminRouter');
 const { requirePermission } = require('./middleware/auth');
-// const { default: mongoose } = require('mongoose');
 
 app.use(cookieParser());
 app.use(express.static('css'))
@@ -21,31 +20,38 @@ app.set("view engine", "ejs")
 app.use(express.urlencoded({extended: true}))
 
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'default_secret', // Use a secure secret in production
+    secret: process.env.SESSION_SECRET || 'default_secret',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI, // MongoDB connection string
+        mongoUrl: process.env.MONGO_URI,
         collectionName: 'sessions',
     }),
     cookie: {
-        maxAge: 1000 * 60 * 15, // 15 minutes session timeout
+        maxAge: 1000 * 15,
         httpOnly: true,
-        // secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
         secure: false,
-        sameSite: 'strict', // Prevent CSRF attacks
+        sameSite: 'strict',
     }
 }));
 
 app.use((req, res, next) => {
     if (req.session) {
-        if (req.session.lastActivity && Date.now() - req.session.lastActivity > 1000 * 60 * 15) {
+        if (req.session.lastActivity && Date.now() - req.session.lastActivity > req.session.cookie.maxAge) {
             req.session.destroy(err => {
-                if (err) console.error('Error destroying session:', err);
-                return res.redirect('/login');
+                if (err) {
+                    console.error('Error destroying session:', err);
+                    if (!res.headersSent) {
+                        return res.status(500).send('Session destruction error.');
+                    }
+                }
+                if (!res.headersSent) {
+                    console.log('Redirecting 12');
+                    return res.redirect('/login');
+                }
             });
         } else {
-            req.session.lastActivity = Date.now(); // Update last activity timestamp
+            req.session.lastActivity = Date.now();
         }
     }
     next();
@@ -54,19 +60,6 @@ app.use((req, res, next) => {
 app.use("/", getRouters)
 app.use("/post", postRouters)
 app.use("/admin", requirePermission('admin_access'), adminRouters)
-
-/*
-app.use(session({
-    secret: "Change this please",
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({mongoUrl: 'mongodb+srv://roncajumban:MDvILUw2z8ocOJlS@cluster0.lf44nxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'}),
-    cookie: {
-        maxAge: 1000*60,
-        httpOnly: true
-    }
-}))
-*/
 
 app.listen(3000, function(req,res) {
     console.log("Listening at port 3000")
