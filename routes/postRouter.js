@@ -244,8 +244,8 @@ router.post('/login', async (req, res) => {
         if (await bcrypt.compare(passwordCheck, user.password_hash)) {
             console.log('Logged in successfully');
 
-            if (!res.headersSent && !req.session) {
-                console.error('Session is not initialized.');
+            if (!res.headersSent && (!req.session || typeof req.session.regenerate !== 'function')) {
+                console.error('Session is not initialized or regenerate is not available.');
                 return res.render("login", { title: "Login Account", error: "Session error. Please try again." });
             }
 
